@@ -13,7 +13,6 @@
     />
     <ResultTable
       :results="searchResults"
-      :isLoading="isLoading"
     />
   </div>
 </template>
@@ -28,7 +27,6 @@ import bookJson from './data/books_pages.json'
 const inputText = ref('春風送暖入屠蘇');
 const booksData = ref<Record<string, Record<string, string>>>(bookJson);
 const selectedBooks = ref<string[]>([]);
-const isLoading = ref(false);
 
 const searchResults = ref<any[]>([]);
 const totalCharacters = computed(() => inputText.value.length);
@@ -41,7 +39,6 @@ function processSearch() {
   const dataToSearch = selectedBooks.value.length
     ? Object.fromEntries(Object.entries(booksData.value).filter(([book]) => selectedBooks.value.includes(book)))
     : booksData.value;
-
   searchResults.value = chars.map(char => {
     const matches = Object.entries(dataToSearch)
       .filter(([, bookChars]) => char in bookChars)
@@ -78,6 +75,6 @@ function clearInput() {
 .app-container {
   max-width: 64rem;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
 }
 </style>
