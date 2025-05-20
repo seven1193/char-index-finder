@@ -102,7 +102,7 @@ watch(() => props.selectedBooks, val => (localSelection.value = [...val]));
 
   .book-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 0.5rem;
     max-height: 160px;
     overflow-y: auto;

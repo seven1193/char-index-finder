@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const inputPath = process.argv[2];
-const outputPath = path.join(__dirname, '../src/data/books_pages.json');
+const outputPath = path.join(__dirname, '../public/data/books_pages.json');
 
 if (!inputPath) {
   console.error('請指定 Excel 檔案路徑');

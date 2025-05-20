@@ -103,8 +103,10 @@ defineProps<{
 
     .books-cell {
       ul {
+        list-style: none;
         padding-left: 1.2rem;
         margin: 0;
+        padding: 0;
 
         li {
           margin-bottom: 0.5rem;

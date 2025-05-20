@@ -18,21 +18,41 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import HeaderSection from './components/HeaderSection.vue';
 import SearchForm from './components/SearchForm.vue';
 import ResultTable from './components/ResultTable.vue';
-import bookJson from './data/books_pages.json'
+
+const STORAGE_KEY = 'inputText';
 
 const inputText = ref('春風送暖入屠蘇');
-const booksData = ref<Record<string, Record<string, string>>>(bookJson);
+const booksData = ref<Record<string, Record<string, string>>>({});
 const selectedBooks = ref<string[]>([]);
 
 const searchResults = ref<any[]>([]);
 const totalCharacters = computed(() => inputText.value.length);
 const totalFound = computed(() => searchResults.value.filter(r => r.found).length);
 
-onMounted(processSearch);
+onMounted(async () => {
+  const savedText = sessionStorage.getItem(STORAGE_KEY);
+  inputText.value = savedText ?? '春風送暖入屠蘇';
+  await fetchBooksData();
+  processSearch();
+});
+
+watch(inputText, (newVal) => {
+  sessionStorage.setItem(STORAGE_KEY, newVal);
+});
+
+async function fetchBooksData() {
+  try {
+    const response = await fetch('/data/books_pages.json');
+    booksData.value = await response.json();
+    processSearch();
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
 
 function processSearch() {
   const chars = Array.from(inputText.value);
