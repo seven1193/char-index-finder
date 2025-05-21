@@ -18,5 +18,6 @@ function removeGitignorePlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/char-index-finder/',
   plugins: [vue(), removeGitignorePlugin()],
 })
