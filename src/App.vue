@@ -46,7 +46,7 @@ watch(inputText, (newVal) => {
 
 async function fetchBooksData() {
   try {
-    const response = await fetch('/data/books_pages.json');
+    const response = await fetch(import.meta.env.BASE_URL +'data/books_pages.json');
     booksData.value = await response.json();
     processSearch();
   } catch (error) {
