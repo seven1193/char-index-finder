@@ -12,7 +12,7 @@
       <button @click="$emit('clearInput')" class="clear-btn">清空</button>
     </div>
 
-    <div class="input-group">
+    <div class="input-group" v-if="totalBooks > 1">
       <label class="label">選擇查找書籍：</label>
       <div class="book-list">
         <label v-for="(_, bookName) in booksData" :key="bookName" class="book-option">
@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
   booksData: Record<string, Record<string, string>>;
@@ -43,6 +43,8 @@ const props = defineProps<{
   totalCharacters: number;
   totalFound: number;
 }>();
+
+const totalBooks = computed(() => Object.keys(props.booksData).length);
 
 const emits = defineEmits(['inputTextChange', 'bookSelectionChange', 'clearInput']);
 
