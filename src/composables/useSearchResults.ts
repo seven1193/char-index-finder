@@ -2,7 +2,7 @@ import { type Ref, computed } from 'vue';
 
 export function useSearchResults(inputText: Ref<string>, selectedBooks: Ref<string[]>, invertedIndex: Ref<Record<string, { bookName: string; page: string }[]>>) {
   return computed(() => {
-    const chars = Array.from(inputText.value);
+    const chars = Array.from(inputText.value).filter((char) => char.trim() !== '');
     const hasSelection = selectedBooks.value.length > 0;
     const selectedSet = hasSelection ? new Set(selectedBooks.value) : null;
 

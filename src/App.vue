@@ -22,6 +22,7 @@ import { ref, computed, onMounted } from 'vue';
 import HeaderSection from './components/HeaderSection.vue';
 import SearchForm from './components/SearchForm.vue';
 import ResultTable from './components/ResultTable.vue';
+import debounce  from 'lodash.debounce';
 
 import { useBooksData } from './composables/useBooksData';
 import { usePersistedInput } from './composables/usePersistedInput';
@@ -42,8 +43,12 @@ onMounted(() => {
   fetchBooksData(import.meta.env.BASE_URL + 'data/books_pages.json');
 });
 
+const debouncedSetInput = debounce((val: string) => {
+  inputText.value = val;
+}, 300);
+
 function onInputTextChange(value: string) {
-  inputText.value = value;
+  debouncedSetInput(value);
 }
 
 function onBookSelectionChange(selection: string[]) {
