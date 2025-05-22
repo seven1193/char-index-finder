@@ -15,11 +15,19 @@ export function useBooksData() {
     invertedIndex.value = index;
   }
 
-  async function fetchBooksData(url: string) {
+  async function fetchBooksData(url: string, allowedBooks: string[]) {
     const response = await fetch(url);
-    const data = await response.json();
-    booksData.value = data;
-    buildInvertedIndex(data);
+    const fullData = await response.json();
+
+    const filteredData: typeof booksData.value = {};
+    for (const book of allowedBooks) {
+      if (fullData[book]) {
+        filteredData[book] = fullData[book];
+      }
+    }
+
+    booksData.value = filteredData;
+    buildInvertedIndex(filteredData);
   }
 
   return {

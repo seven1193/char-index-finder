@@ -22,16 +22,18 @@ import { ref, computed, onMounted } from 'vue';
 import HeaderSection from './components/HeaderSection.vue';
 import SearchForm from './components/SearchForm.vue';
 import ResultTable from './components/ResultTable.vue';
-import debounce  from 'lodash.debounce';
-
+import debounce from 'lodash.debounce';
 import { useBooksData } from './composables/useBooksData';
 import { usePersistedInput } from './composables/usePersistedInput';
 import { useSearchResults } from './composables/useSearchResults';
+import { useBookshelf } from './composables/useBookshelf';
 
 const STORAGE_KEY = 'inputText';
 
 const inputText = usePersistedInput(STORAGE_KEY, '春風送暖入屠蘇');
 const selectedBooks = ref<string[]>([]);
+
+const { selectedBooksFromShelf, fetchBookshelf } = useBookshelf();
 
 const { booksData, invertedIndex, fetchBooksData } = useBooksData();
 const searchResults = useSearchResults(inputText, selectedBooks, invertedIndex);
@@ -39,8 +41,14 @@ const searchResults = useSearchResults(inputText, selectedBooks, invertedIndex);
 const totalCharacters = computed(() => inputText.value.length);
 const totalFound = computed(() => searchResults.value.filter((r) => r.found).length);
 
-onMounted(() => {
-  fetchBooksData(import.meta.env.BASE_URL + 'data/books_pages.json');
+onMounted(async () => {
+  await fetchBookshelf(import.meta.env.BASE_URL + 'data/bookshelf.json');
+  selectedBooks.value = selectedBooksFromShelf.value;
+
+  await fetchBooksData(
+    import.meta.env.BASE_URL + 'data/books_pages.json',
+    selectedBooksFromShelf.value
+  );
 });
 
 const debouncedSetInput = debounce((val: string) => {

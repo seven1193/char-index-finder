@@ -7,7 +7,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const inputPath = process.argv[2];
-const outputPath = path.join(__dirname, '../public/data/books_pages.json');
+const outputDir = path.join(__dirname, '../public/data');
+const outputPath = path.join(outputDir, 'books_pages.json');
+const bookshelfPath = path.join(outputDir, 'bookshelf.json');
 
 if (!inputPath) {
   console.error('請指定 Excel 檔案路徑');
@@ -17,7 +19,9 @@ if (!inputPath) {
 const workbook = xlsx.readFile(inputPath);
 const result = {};
 
-workbook.SheetNames.forEach(sheetName => {
+const sheetNames = workbook.SheetNames;
+
+sheetNames.forEach(sheetName => {
   const worksheet = workbook.Sheets[sheetName];
   const sheetData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
   if (!result[sheetName]) result[sheetName] = {};
@@ -28,14 +32,22 @@ workbook.SheetNames.forEach(sheetName => {
     for (let j = 1; j < charRow.length; j ++) {
       const page = pageRow[j];
       const char = charRow[j];
-      if (typeof page === 'string' || typeof page === 'number') {
-        if (typeof char === 'string' && char.trim()) {
-          result[sheetName][char.trim()] = String(page);
-        }
+      if ((typeof page === 'string' || typeof page === 'number') &&
+          typeof char === 'string' && char.trim()) {
+        result[sheetName][char.trim()] = String(page);
       }
     }
   }
 });
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+// 寫入 books_pages.json
 fs.writeFileSync(outputPath, JSON.stringify(result), 'utf8');
-console.log('✅ 轉換完成，輸出：' + outputPath);
+console.log('✅ 已輸出：' + outputPath);
+
+// 產生 bookshelf.json
+const bookshelf = {
+  default: sheetNames.length > 0 ? [sheetNames[0]] : [],
+  all: sheetNames
+};
+fs.writeFileSync(bookshelfPath, JSON.stringify(bookshelf, null, 2), 'utf8');
+console.log('✅ 已輸出：' + bookshelfPath);
