@@ -42,11 +42,12 @@ const totalCharacters = computed(() => inputText.value.length);
 const totalFound = computed(() => searchResults.value.filter((r) => r.found).length);
 
 onMounted(async () => {
-  await fetchBookshelf(import.meta.env.BASE_URL + 'data/bookshelf.json');
+  const timestamp = new Date().getTime();
+  await fetchBookshelf(`${import.meta.env.BASE_URL}data/bookshelf.json?ts=${timestamp}`);
   selectedBooks.value = selectedBooksFromShelf.value;
 
   await fetchBooksData(
-    import.meta.env.BASE_URL + 'data/books_pages.json',
+    `${import.meta.env.BASE_URL}data/books_pages.json?ts=${timestamp}`,
     selectedBooksFromShelf.value
   );
 });
