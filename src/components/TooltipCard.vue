@@ -1,6 +1,6 @@
 <template>
     <div class="tooltip-wrapper" ref="triggerRef" @mouseenter="show = true" @mouseleave="show = false"
-        @click="show = !show">
+        @click.stop="show = !show">
         <slot />
 
         <teleport to="body">

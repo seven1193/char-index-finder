@@ -23,9 +23,18 @@
             <td class="books-cell">
               <ul>
                 <li v-for="book in result.books" :key="book.bookName + book.page + book.pos">
+                  <!-- Spotlight 按鈕（只有有 pos 才顯示） -->
+                  <SpotlightImage v-if="book.pos"
+                    :src="`${BASE_URL}image/${book.bookName}/${book.page}-${book.pos}.jpeg`">
+                    <template #default="{ open }">
+                      <button class="btn btn-outline-secondary" @click.stop="open">🔍</button>
+                    </template>
+                  </SpotlightImage>
                   <span class="book-name">《{{ book.bookName }}》</span>
-                  <span class="page-label">頁數：{{ book.page }}</span>
-                  <span v-if="book.pos" class="pos-label">位置：{{ book.pos }}</span>
+                  <span class="page-label">
+                    <span>{{ book.page }}頁</span>
+                    <span>{{ book.pos ? '之 ' + book.pos : '' }}</span>
+                  </span>
                 </li>
               </ul>
             </td>
@@ -38,12 +47,21 @@
       <TooltipCard v-for="result in results" :key="result.character" :books="result.books">
         <div class="grid-item">
           <div class="character">{{ result.character }}</div>
-          <div class="pages">
-            <div v-for="book in result.books" :key="book.bookName + book.page + book.pos" class="page">
+          <div class="books">
+            <div v-for="book in result.books" :key="book.bookName + book.page + book.pos" class="pages">
               <!-- 改成頁-位置簡潔格式 -->
-              <span class="page-text">
-                {{ book.page }}{{ book.pos ? '-' + book.pos : '' }}
-              </span>
+              <SpotlightImage v-if="book.pos" :src="`${BASE_URL}image/${book.bookName}/${book.page}-${book.pos}.jpeg`">
+                <template #default="{ open }">
+                  <button class="btn btn-primary" @click.stop="open">
+                    <span class="page-text">
+                      {{ book.page }}{{ book.pos ? '-' + book.pos : '' }}
+                    </span>
+                  </button>
+                </template>
+              </SpotlightImage>
+              <div v-else class="page">
+                <span class="page-text">{{ book.page }}{{ book.pos ? '-' + book.pos : '' }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -56,6 +74,9 @@
 import { ref, watch, onMounted } from 'vue';
 import TooltipCard from './TooltipCard.vue';
 import type { CharacterResult } from '../types/books';
+import SpotlightImage from './SpotlightImage.vue';
+
+const BASE_URL = import.meta.env.BASE_URL;
 
 defineProps<{
   results: CharacterResult[];
@@ -177,6 +198,8 @@ watch(isVertical, (val) => {
             }
 
             .page-label {
+              display: inline-flex;
+              column-gap: 0.5rem;
               margin-right: 0.5rem;
             }
 
@@ -213,13 +236,19 @@ watch(isVertical, (val) => {
         margin-bottom: 0.5rem;
       }
 
-      .pages {
+      .books {
         display: flex;
         flex-wrap: wrap; // 自動換行
         justify-content: center;
         gap: 0.25rem; // 書本卡片間距
         max-height: 150px; // 固定書本區高度
         overflow-y: auto; // 超出高度可滾動
+
+        .pages {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+        }
 
         .page {
           display: flex;
