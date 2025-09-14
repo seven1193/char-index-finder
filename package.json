@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "convert": "node ./excel-to-json/convert.js ./data/田英章毛筆楷書2500字.xls",
+    "convert": "node ./excel-to-json/convert.js ./data/20250914書櫃.xlsx",
     "preview": "vite preview"
   },
   "dependencies": {
