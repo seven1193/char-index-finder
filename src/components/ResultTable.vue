@@ -23,13 +23,15 @@
             <td class="books-cell">
               <ul>
                 <li v-for="book in result.books" :key="book.bookName + book.page + book.pos">
-                  <!-- Spotlight 按鈕（只有有 pos 才顯示） -->
-                  <SpotlightImage v-if="book.pos"
-                    :src="`${BASE_URL}image/${book.bookName}/${book.page}-${book.pos}.jpeg`">
-                    <template #default="{ open }">
-                      <button class="btn btn-outline-secondary" @click.stop="open">🔍</button>
-                    </template>
-                  </SpotlightImage>
+                  <ImageCheck :src="getImageUrl(book.bookName, book.page, book.pos)">
+                    <!-- Spotlight 按鈕（只有有 pos 才顯示） -->
+                    <SpotlightImage v-if="book.pos"
+                      :src="`${BASE_URL}image/${book.bookName}/${book.page}-${book.pos}.jpeg`">
+                      <template #default="{ open }">
+                        <button class="btn btn-outline-secondary" @click.stop="open">🔍</button>
+                      </template>
+                    </SpotlightImage>
+                  </ImageCheck>
                   <span class="book-name">《{{ book.bookName }}》</span>
                   <span class="page-label">
                     <span>{{ book.page }}頁</span>
@@ -50,18 +52,25 @@
           <div class="books">
             <div v-for="book in result.books" :key="book.bookName + book.page + book.pos" class="pages">
               <!-- 改成頁-位置簡潔格式 -->
-              <SpotlightImage v-if="book.pos" :src="`${BASE_URL}image/${book.bookName}/${book.page}-${book.pos}.jpeg`">
-                <template #default="{ open }">
-                  <button class="btn btn-primary" @click.stop="open">
+              <ImageCheck :src="getImageUrl(book.bookName, book.page, book.pos)">
+                <SpotlightImage :src="getImageUrl(book.bookName, book.page, book.pos)">
+                  <template #default="{ open }">
+                    <button class="btn btn-primary" @click.stop="open">
+                      <span class="page-text">
+                        {{ book.page }}{{ book.pos ? '-' + book.pos : '' }}
+                      </span>
+                    </button>
+                  </template>
+                </SpotlightImage>
+
+                <template #fallback>
+                  <div class="page">
                     <span class="page-text">
                       {{ book.page }}{{ book.pos ? '-' + book.pos : '' }}
                     </span>
-                  </button>
+                  </div>
                 </template>
-              </SpotlightImage>
-              <div v-else class="page">
-                <span class="page-text">{{ book.page }}{{ book.pos ? '-' + book.pos : '' }}</span>
-              </div>
+              </ImageCheck>
             </div>
           </div>
         </div>
@@ -71,12 +80,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-import TooltipCard from './TooltipCard.vue';
+import { onMounted, ref, watch } from 'vue';
 import type { CharacterResult } from '../types/books';
+import ImageCheck from './ImageCheck.vue';
 import SpotlightImage from './SpotlightImage.vue';
+import TooltipCard from './TooltipCard.vue';
 
 const BASE_URL = import.meta.env.BASE_URL;
+
+function getImageUrl(bookName: string, page: string | number, pos?: string | null) {
+  if (pos) {
+    return `${BASE_URL}image/${bookName}/${page}-${pos}.jpeg`;
+  }
+  return `${BASE_URL}image/${bookName}/${page}.jpeg`;
+}
 
 defineProps<{
   results: CharacterResult[];
