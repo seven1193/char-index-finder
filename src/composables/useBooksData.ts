@@ -1,15 +1,16 @@
-import { ref } from 'vue';
+import { ref } from "vue";
+import type { BooksData, InvertedIndex } from "../types/books";
 
 export function useBooksData() {
-  const booksData = ref<Record<string, Record<string, string>>>({});
-  const invertedIndex = ref<Record<string, { bookName: string; page: string }[]>>({});
+  const booksData = ref<BooksData>({});
+  const invertedIndex = ref<InvertedIndex>({});
 
   function buildInvertedIndex(data: typeof booksData.value) {
     const index: typeof invertedIndex.value = {};
     for (const [bookName, charMap] of Object.entries(data)) {
-      for (const [char, page] of Object.entries(charMap)) {
+      for (const [char, info] of Object.entries(charMap)) {
         if (!index[char]) index[char] = [];
-        index[char].push({ bookName, page });
+        index[char].push({ bookName, page: info.page, pos: info.pos });
       }
     }
     invertedIndex.value = index;
@@ -17,7 +18,7 @@ export function useBooksData() {
 
   async function fetchBooksData(url: string, allowedBooks: string[]) {
     const response = await fetch(url);
-    const fullData = await response.json();
+    const fullData: BooksData = await response.json();
 
     const filteredData: typeof booksData.value = {};
     for (const book of allowedBooks) {

@@ -35,9 +35,10 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
+import type { BooksData } from '../types/books';
 
 const props = defineProps<{
-  booksData: Record<string, Record<string, string>>;
+  booksData: BooksData;
   inputText: string;
   selectedBooks: string[];
   totalCharacters: number;

@@ -22,8 +22,10 @@
             <td class="character-cell">{{ result.character }}</td>
             <td class="books-cell">
               <ul>
-                <li v-for="book in result.books" :key="book.bookName + book.page">
-                  <span class="book-name">《{{ book.bookName }}》</span> 第 {{ book.page }} 頁
+                <li v-for="book in result.books" :key="book.bookName + book.page + book.pos">
+                  <span class="book-name">《{{ book.bookName }}》</span>
+                  <span class="page-label">頁數：{{ book.page }}</span>
+                  <span v-if="book.pos" class="pos-label">位置：{{ book.pos }}</span>
                 </li>
               </ul>
             </td>
@@ -32,14 +34,16 @@
       </table>
     </div>
 
-    <!-- 橫式 Grid -->
     <div v-else class="grid-wrapper">
       <TooltipCard v-for="result in results" :key="result.character" :books="result.books">
         <div class="grid-item">
           <div class="character">{{ result.character }}</div>
           <div class="pages">
-            <div v-for="book in result.books" :key="book.bookName + book.page" class="page">
-              {{ book.page }}
+            <div v-for="book in result.books" :key="book.bookName + book.page + book.pos" class="page">
+              <!-- 改成頁-位置簡潔格式 -->
+              <span class="page-text">
+                {{ book.page }}{{ book.pos ? '-' + book.pos : '' }}
+              </span>
             </div>
           </div>
         </div>
@@ -51,16 +55,10 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import TooltipCard from './TooltipCard.vue';
+import type { CharacterResult } from '../types/books';
 
 defineProps<{
-  results: Array<{
-    character: string;
-    found: boolean;
-    books: Array<{
-      bookName: string;
-      page: string;
-    }>;
-  }>;
+  results: CharacterResult[];
 }>();
 
 const isVertical = ref(true);
@@ -177,6 +175,14 @@ watch(isVertical, (val) => {
               font-weight: 500;
               color: #0f172a;
             }
+
+            .page-label {
+              margin-right: 0.5rem;
+            }
+
+            .pos-label {
+              color: gray;
+            }
           }
         }
       }
@@ -209,16 +215,25 @@ watch(isVertical, (val) => {
 
       .pages {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: wrap; // 自動換行
         justify-content: center;
-        gap: 0.25rem;
+        gap: 0.25rem; // 書本卡片間距
+        max-height: 150px; // 固定書本區高度
+        overflow-y: auto; // 超出高度可滾動
 
         .page {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           background: #e0f2fe;
-          padding: 0.25rem 0.5rem;
+          padding: 0.3rem 0.5rem; // 小卡片
           border-radius: 0.25rem;
-          font-size: 0.8rem;
+          font-size: 0.75rem;
           color: #0f172a;
+
+          .page-text {
+            font-size: 0.75rem;
+          }
         }
       }
     }
