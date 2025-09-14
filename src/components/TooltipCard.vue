@@ -8,7 +8,7 @@
                 <ul>
                     <li v-for="(book, index) in books" :key="index" class="tooltip-book">
                         <span class="book-name">《{{ book.bookName }}》</span>
-                        <span class="book-page">頁數：{{ book.page }}</span>
+                        <span class="book-page">頁數：{{ book.page ?? '---' }}</span>
                         <span v-if="book.pos" class="book-pos">位置：{{ book.pos }}</span>
                     </li>
                 </ul>

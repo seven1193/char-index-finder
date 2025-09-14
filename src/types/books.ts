@@ -1,5 +1,5 @@
 interface BookPositionRawData {
-  page: string;
+  page: string | null;
   pos?: string | null;
 }
 

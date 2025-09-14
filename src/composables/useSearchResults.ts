@@ -26,7 +26,7 @@ export function useSearchResults(
         found,
         books: found
           ? matches
-          : [{ bookName: "查無資料", page: "---", pos: null }],
+          : [{ bookName: "查無資料", page: null, pos: null }],
       };
     });
   });
