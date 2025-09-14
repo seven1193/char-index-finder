@@ -8,11 +8,13 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "convert": "node ./command/excel-to-json/convert.js ./data/20250914書櫃.xlsx",
+    "split2500": "node ./command/split-image/split2500.js",
     "preview": "vite preview"
   },
   "dependencies": {
     "lodash.debounce": "^4.0.8",
     "normalize.css": "^8.0.1",
+    "sharp": "^0.34.3",
     "vue": "^3.5.13",
     "xlsx": "^0.18.5"
   },
