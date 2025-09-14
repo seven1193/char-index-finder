@@ -19,15 +19,15 @@ if (!inputPath) {
 
 const workbook = xlsx.readFile(inputPath);
 const result = {};
+const duplicates = {};
 
 const sheetNames = workbook.SheetNames;
 
-sheetNames.forEach(sheetName => {
+sheetNames.forEach((sheetName) => {
   const worksheet = workbook.Sheets[sheetName];
   const sheetData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
   if (!result[sheetName]) result[sheetName] = {};
 
-  // 每 3 列一組：頁 / 位 / 字
   for (let i = 2; i < sheetData.length; i += 3) {
     const pageRow = sheetData[i]; // 頁
     const posRow = sheetData[i + 1]; // 位
@@ -37,12 +37,31 @@ sheetNames.forEach(sheetName => {
       const page = pageRow[j];
       const pos = posRow[j];
       const char = charRow[j];
+
       if (
         (typeof page === "string" || typeof page === "number") &&
         typeof char === "string" &&
         char.trim()
       ) {
-        result[sheetName][char.trim()] = {
+        const cleanChar = char.trim();
+
+        // 如果這個字已經出現過，就放到 duplicates
+        if (result[sheetName][cleanChar]) {
+          if (!duplicates[sheetName]) duplicates[sheetName] = {};
+          if (!duplicates[sheetName][cleanChar])
+            duplicates[sheetName][cleanChar] = [];
+
+          // 把之前的出現點也記錄進去（避免漏掉第一次）
+          if (duplicates[sheetName][cleanChar].length === 0) {
+            duplicates[sheetName][cleanChar].push(result[sheetName][cleanChar]);
+          }
+          duplicates[sheetName][cleanChar].push({
+            page: String(page),
+            pos: pos !== undefined ? String(pos) : null,
+          });
+        }
+
+        result[sheetName][cleanChar] = {
           page: String(page),
           pos: pos !== undefined ? String(pos) : null,
         };
@@ -64,3 +83,10 @@ const bookshelf = {
 };
 fs.writeFileSync(bookshelfPath, JSON.stringify(bookshelf, null, 2), "utf8");
 console.log("✅ 已輸出：" + bookshelfPath);
+
+// 寫入 duplicates.json
+if (Object.keys(duplicates).length > 0) {
+  const duplicatesPath = path.join(outputDir, "duplicates.json");
+  fs.writeFileSync(duplicatesPath, JSON.stringify(duplicates, null, 2), "utf8");
+  console.log("⚠️ 重複字已輸出：" + duplicatesPath);
+}
