@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const inputPath = process.argv[2];
-const outputDir = path.join(__dirname, "../public/data");
+const outputDir = path.join(__dirname, "../../public/data");
 const outputPath = path.join(outputDir, "books_pages.json");
 const bookshelfPath = path.join(outputDir, "bookshelf.json");
 
