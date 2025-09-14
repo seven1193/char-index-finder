@@ -30,11 +30,6 @@ jobs:
         with:
           cmd: convert # will run `yarn convert` command
 
-      - name: Split 2500 Characters
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: split2500 # will run `yarn split2500` command
-
       - name: Build production bundle
         uses: borales/actions-yarn@v4
         with:
