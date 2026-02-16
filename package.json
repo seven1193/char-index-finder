@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "convert": "node ./command/excel-to-json/convert.js ./data/20250930書櫃.xlsx",
+    "convert": "node ./command/excel-to-json/convert.js ./data/20251102書櫃.xlsx",
     "split2500": "node ./command/split-image/split2500.js",
     "preview": "vite preview"
   },
