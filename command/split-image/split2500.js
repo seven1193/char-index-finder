@@ -76,7 +76,7 @@ const splitImageAuto = async (filePath, fileBase) => {
 
 const main = async () => {
   const files = (await fs.promises.readdir(inputDir)).filter((f) =>
-    f.endsWith(".jpeg")
+    f.endsWith(".jpg")
   );
 
   for (let i = 0; i < files.length; i++) {
