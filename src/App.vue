@@ -18,7 +18,7 @@
       <ViewToolbar
         :view="view"
         :sort="sort"
-        @update:view="onViewChange"
+        @update:view="view = $event"
         @update:sort="sort = $event"
         @print="printList"
       />
@@ -83,7 +83,8 @@ const { booksData, invertedIndex, fetchBooksData } = useBooksData();
 const searchResults = useSearchResults(inputText, selectedBooks, invertedIndex);
 
 const view = usePreference<ViewMode>('viewMode', 'list', ['list', 'grid', 'table']);
-const sort = usePreference<SortMode>('sortMode', 'input', ['input', 'page']);
+// 排列不記憶，每次打開都從「照輸入順序」開始
+const sort = ref<SortMode>('input');
 
 const rows = useResultRows(searchResults, sort);
 // 列印一律依頁碼排序
@@ -129,12 +130,6 @@ function onBookSelectionChange(selection: string[]) {
 function clearInput() {
   debouncedSetInput.cancel();
   inputText.value = '';
-}
-
-// 翻書清單預設照頁碼排列
-function onViewChange(value: ViewMode) {
-  view.value = value;
-  if (value === 'table') sort.value = 'page';
 }
 
 function printList() {

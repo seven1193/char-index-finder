@@ -4,10 +4,11 @@
     <div class="input-row">
       <textarea
         id="input-text"
+        ref="textareaRef"
         v-model="localInput"
         rows="1"
         class="textarea"
-        @input="$emit('inputTextChange', localInput)"
+        @input="onInput"
         @keydown.enter.prevent="$emit('search', localInput)"
       ></textarea>
       <button type="button" class="btn btn-primary action-btn" @click="$emit('search', localInput)">查詢</button>
@@ -37,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { BooksData } from '../types/books';
 
 const props = defineProps<{
@@ -51,13 +52,39 @@ const props = defineProps<{
 
 const totalBooks = computed(() => Object.keys(props.booksData).length);
 
-defineEmits(['inputTextChange', 'search', 'bookSelectionChange', 'clearInput']);
+const emit = defineEmits(['inputTextChange', 'search', 'bookSelectionChange', 'clearInput']);
 
 const localInput = ref(props.inputText);
 const localSelection = ref([...props.selectedBooks]);
+const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
-watch(() => props.inputText, val => (localInput.value = val));
+// 輸入框依內容自動長高
+function autoResize() {
+  const el = textareaRef.value;
+  if (!el) return;
+  el.style.height = 'auto';
+  const border = el.offsetHeight - el.clientHeight;
+  el.style.height = `${el.scrollHeight + border}px`;
+}
+
+function onInput() {
+  emit('inputTextChange', localInput.value);
+  autoResize();
+}
+
+watch(() => props.inputText, async val => {
+  localInput.value = val;
+  await nextTick();
+  autoResize();
+});
 watch(() => props.selectedBooks, val => (localSelection.value = [...val]));
+
+// 寬度改變時換行數也會變
+onMounted(() => {
+  autoResize();
+  window.addEventListener('resize', autoResize);
+});
+onBeforeUnmount(() => window.removeEventListener('resize', autoResize));
 </script>
 
 <style scoped lang="scss">
@@ -79,7 +106,7 @@ watch(() => props.selectedBooks, val => (localSelection.value = [...val]));
   .input-row {
     display: flex;
     gap: 0.75rem;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .textarea {
@@ -91,15 +118,16 @@ watch(() => props.selectedBooks, val => (localSelection.value = [...val]));
     letter-spacing: 0.25rem;
     border: 2px solid var(--line-strong);
     border-radius: var(--radius);
-    // 依內容自動長高（不支援的瀏覽器可手動拉高）
-    field-sizing: content;
-    resize: vertical;
+    overflow: hidden;
+    resize: none;
     color: var(--ink);
     background: var(--surface);
   }
 
+  // 與單行輸入框同高，輸入框長高時按鈕維持在上方
   .action-btn {
     min-width: 6rem;
+    height: calc(3.2rem + 4px);
     font-size: 1.3125rem;
   }
 
