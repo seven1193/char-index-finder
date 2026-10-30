@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# 由 yarn images 從 data/char-image 產生
+public/image
+public/thumb

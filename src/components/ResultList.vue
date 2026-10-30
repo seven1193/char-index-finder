@@ -9,6 +9,7 @@
             v-for="image in getBookImages(row.book, row.character)"
             :key="image.variant"
             :src="image.src"
+            :thumb="image.thumb"
             :alt="`${image.label} ${image.char} 字帖`"
             :caption="image.label ? `${image.label} ${image.char}` : ''"
           />

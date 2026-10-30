@@ -22,6 +22,7 @@
             v-for="image in visibleImages(row)"
             :key="image.variant"
             :src="image.src"
+            :thumb="image.thumb"
             :alt="`${image.label} ${image.char} 字帖`"
             size="100%"
           />

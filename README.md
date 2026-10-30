@@ -100,9 +100,20 @@ node excel-to-json/convert.js <Excel檔名>
 將整頁圖（`001.jpg`…）切成單字圖（`001-01.jpeg`…），切好的圖要 commit：
 
 ```bash
-yarn split2500        # 繁體：data/田英章毛筆楷書2500字 → public/image/田英章毛筆楷書2500字
-yarn split2500:simp   # 簡體：data/田英章毛筆楷書2500字（簡體） → public/image/田英章毛筆楷書2500字（簡體）
+yarn split2500        # 繁體：data/田英章毛筆楷書2500字 → data/char-image/田英章毛筆楷書2500字
+yarn split2500:simp   # 簡體：data/田英章毛筆楷書2500字（簡體） → data/char-image/田英章毛筆楷書2500字（簡體）
 ```
+
+### 產生網頁用的 WebP 圖
+
+網頁不直接用 `data/char-image` 的 JPEG，而是用轉好的 WebP（不進 git，部署時會自動產生）。第一次在本機開發前要先執行一次：
+
+```bash
+yarn images           # data/char-image → public/image（大圖）、public/thumb（400px 小圖）
+yarn images --force   # 換過字卡圖時，全部重轉
+```
+
+已經轉過的圖會跳過，所以加新書後再執行一次即可。
 
 ### 3. 啟動前端伺服器
 

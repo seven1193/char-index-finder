@@ -25,7 +25,7 @@
               <img
                 v-for="image in getBookImages(row.book, row.character)"
                 :key="image.variant"
-                :src="image.src"
+                :src="image.thumb"
                 :alt="`${image.label} ${image.char}`"
               />
             </div>

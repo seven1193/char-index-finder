@@ -3,7 +3,7 @@
     <SpotlightImage v-if="!failed" :src="src" :alt="alt">
       <template #default="{ open }">
         <button class="thumb-btn" type="button" :aria-label="`放大 ${alt}`" @click.stop="open">
-          <img :src="src" :alt="alt" loading="lazy" @error="failed = true" />
+          <img :src="thumb ?? src" :alt="alt" loading="lazy" @error="failed = true" />
         </button>
       </template>
     </SpotlightImage>
@@ -18,6 +18,7 @@ import SpotlightImage from './SpotlightImage.vue';
 
 const props = withDefaults(defineProps<{
   src: string;
+  thumb?: string;
   alt: string;
   caption?: string;
   size?: string;

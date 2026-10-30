@@ -4,7 +4,7 @@ import sharp from "sharp";
 
 // 可用參數指定：node split2500.js <輸入資料夾> <輸出資料夾>
 const inputDir = process.argv[2] || "./data/田英章毛筆楷書2500字";
-const outputDir = process.argv[3] || "./public/image/田英章毛筆楷書2500字";
+const outputDir = process.argv[3] || "./data/char-image/田英章毛筆楷書2500字";
 
 // 確保輸出資料夾存在
 await fs.promises.mkdir(outputDir, { recursive: true });

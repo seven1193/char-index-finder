@@ -30,6 +30,20 @@ jobs:
         with:
           cmd: convert # will run `yarn convert` command
 
+      # 字帖圖沒變時直接用上次轉好的 WebP，不必重轉
+      - name: Cache webp images
+        uses: actions/cache@v4
+        with:
+          path: |
+            public/image
+            public/thumb
+          key: webp-${{ hashFiles('data/char-image/**', 'command/webp-images/**') }}
+
+      - name: Build webp images
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: images # will run `yarn images` command
+
       - name: Build production bundle
         uses: borales/actions-yarn@v4
         with:
