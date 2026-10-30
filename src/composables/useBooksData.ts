@@ -10,7 +10,7 @@ export function useBooksData() {
     for (const [bookName, charMap] of Object.entries(data)) {
       for (const [char, info] of Object.entries(charMap)) {
         if (!index[char]) index[char] = [];
-        index[char].push({ bookName, page: info.page, pos: info.pos });
+        index[char].push({ ...info, bookName });
       }
     }
     invertedIndex.value = index;

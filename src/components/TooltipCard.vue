@@ -10,6 +10,7 @@
                         <span class="book-name">《{{ book.bookName }}》</span>
                         <span class="book-page">頁數：{{ book.page ?? '---' }}</span>
                         <span v-if="book.pos" class="book-pos">位置：{{ book.pos }}</span>
+                        <span v-if="book.simp" class="book-variant">繁:{{ book.trad }}／簡:{{ book.simp }}</span>
                     </li>
                 </ul>
             </div>
@@ -112,7 +113,8 @@ function updateTooltipPosition() {
 }
 
 .book-page,
-.book-pos {
+.book-pos,
+.book-variant {
     color: #0f172a;
 }
 

@@ -23,20 +23,23 @@
             <td class="books-cell">
               <ul>
                 <li v-for="book in result.books" :key="book.bookName + book.page + book.pos">
-                  <ImageCheck v-if="book.page && book.pos" :src="getImageUrl(book.bookName, book.page, book.pos)">
-                    <!-- Spotlight 按鈕（只有有 pos 才顯示） -->
-                    <SpotlightImage v-if="book.pos"
-                      :src="`${BASE_URL}image/${book.bookName}/${book.page}-${book.pos}.jpeg`">
-                      <template #default="{ open }">
-                        <button class="btn btn-outline-secondary" @click.stop="open">🔍</button>
-                      </template>
-                    </SpotlightImage>
-                  </ImageCheck>
+                  <template v-if="book.page && book.pos">
+                    <!-- Spotlight 按鈕（只有有 pos 才顯示），有繁簡版本時各一個 -->
+                    <ImageCheck v-for="variant in getVariants(book)" :key="variant.key"
+                      :src="getImageUrl(book.bookName, book.page, book.pos, variant.key)">
+                      <SpotlightImage :src="getImageUrl(book.bookName, book.page, book.pos, variant.key)">
+                        <template #default="{ open }">
+                          <button class="btn btn-outline-secondary" @click.stop="open">{{ variant.label }}🔍</button>
+                        </template>
+                      </SpotlightImage>
+                    </ImageCheck>
+                  </template>
                   <span class="book-name">《{{ book.bookName }}》</span>
                   <span class="page-label">
                     <span v-if="book.page">{{ book.page }}頁</span>
                     <span v-if="book.pos">之{{ book.pos }}</span>
                   </span>
+                  <span v-if="book.simp" class="variant-label">繁:{{ book.trad }} 簡:{{ book.simp }}</span>
                 </li>
               </ul>
             </td>
@@ -52,25 +55,29 @@
           <div class="books">
             <div v-for="book in result.books" :key="book.bookName + book.page + book.pos" class="pages">
               <!-- 改成頁-位置簡潔格式 -->
-              <ImageCheck v-if="book.page && book.pos" :src="getImageUrl(book.bookName, book.page, book.pos)">
-                <SpotlightImage :src="getImageUrl(book.bookName, book.page, book.pos)">
-                  <template #default="{ open }">
-                    <button class="btn btn-primary" @click.stop="open">
-                      <span class="page-text">
-                        {{ book.page }}-{{ book.pos }}
-                      </span>
-                    </button>
-                  </template>
-                </SpotlightImage>
+              <template v-if="book.page && book.pos">
+                <ImageCheck v-for="variant in getVariants(book)" :key="variant.key"
+                  :src="getImageUrl(book.bookName, book.page, book.pos, variant.key)">
+                  <SpotlightImage :src="getImageUrl(book.bookName, book.page, book.pos, variant.key)">
+                    <template #default="{ open }">
+                      <button class="btn btn-primary" @click.stop="open">
+                        <span class="page-text">
+                          {{ book.page }}-{{ book.pos }}{{ variant.label ? ' ' + variant.label : '' }}
+                        </span>
+                      </button>
+                    </template>
+                  </SpotlightImage>
 
-                <template #fallback>
-                  <div class="page">
-                    <span class="page-text">
-                      {{ book.page ?? '---' }}{{ book.pos ? '-' + book.pos : '' }}
-                    </span>
-                  </div>
-                </template>
-              </ImageCheck>
+                  <!-- 簡體圖不存在時不顯示，只在繁體（主要）圖不存在時顯示頁碼 -->
+                  <template v-if="variant.key === 'trad'" #fallback>
+                    <div class="page">
+                      <span class="page-text">
+                        {{ book.page ?? '---' }}{{ book.pos ? '-' + book.pos : '' }}
+                      </span>
+                    </div>
+                  </template>
+                </ImageCheck>
+              </template>
               <div v-else class="page">
                 <span class="page-text">
                   {{ book.page ?? '---' }}{{ book.pos ? '-' + book.pos : '' }}
@@ -86,15 +93,30 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import type { CharacterResult } from '../types/books';
+import type { BookPosition, CharacterResult } from '../types/books';
 import ImageCheck from './ImageCheck.vue';
 import SpotlightImage from './SpotlightImage.vue';
 import TooltipCard from './TooltipCard.vue';
 
 const BASE_URL = import.meta.env.BASE_URL;
 
-function getImageUrl(bookName: string, page: string, pos?: string) {
-  return `${BASE_URL}image/${bookName}/${page}-${pos}.jpeg`;
+type ImageVariant = 'trad' | 'simp';
+
+// 簡體圖放在「書名（簡體）」資料夾
+function getImageUrl(bookName: string, page: string, pos: string, variant: ImageVariant = 'trad') {
+  const folder = variant === 'simp' ? `${bookName}（簡體）` : bookName;
+  return `${BASE_URL}image/${folder}/${page}-${pos}.jpeg`;
+}
+
+// 有繁簡版本的書顯示「繁」「簡」兩個按鈕，一般書籍維持一個
+function getVariants(book: BookPosition): { key: ImageVariant; label: string }[] {
+  if (book.simp) {
+    return [
+      { key: 'trad', label: '繁' },
+      { key: 'simp', label: '簡' },
+    ];
+  }
+  return [{ key: 'trad', label: book.trad ? '繁' : '' }];
 }
 
 defineProps<{
@@ -224,6 +246,11 @@ watch(isVertical, (val) => {
 
             .pos-label {
               color: gray;
+            }
+
+            .variant-label {
+              color: #64748b;
+              font-size: 0.875rem;
             }
           }
         }

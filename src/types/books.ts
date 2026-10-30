@@ -1,6 +1,9 @@
 interface BookPositionRawData {
   page: string | null;
   pos?: string | null;
+  // 有繁、簡版本的書才有
+  trad?: string;
+  simp?: string;
 }
 
 // 單個字在書中的位置

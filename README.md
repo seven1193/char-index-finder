@@ -24,6 +24,7 @@
   - 每本書一個工作表（sheet），建議以書名命名
   - 每行資料格式：頁碼 + 對應字串（如：`1-1`, `一`）
   - 實際內容從第 3 列開始解析
+  - 繁簡版本：工作表命名為 `繁體 - 書名（xx版）`、`簡體 - 書名（xx版）`，兩表依「頁-位」逐格對齊，會合併成同一本書（書名為 `書名`）。繁、簡字都能查到同一筆，資料會多帶 `trad`、`simp` 欄位
 - **JSON 輸出範例**：
   ```json
   {
@@ -92,6 +93,15 @@ yarn install
 ```bash
 node excel-to-json/convert.js <Excel檔名>
 # 產出的 books_pages.json 會放在 public/data/
+```
+
+### 切割字卡圖片
+
+將整頁圖（`001.jpg`…）切成單字圖（`001-01.jpeg`…），切好的圖要 commit：
+
+```bash
+yarn split2500        # 繁體：data/田英章毛筆楷書2500字 → public/image/田英章毛筆楷書2500字
+yarn split2500:simp   # 簡體：data/田英章毛筆楷書2500字（簡體） → public/image/田英章毛筆楷書2500字（簡體）
 ```
 
 ### 3. 啟動前端伺服器
