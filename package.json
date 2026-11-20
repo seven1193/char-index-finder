@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "convert": "node ./command/excel-to-json/convert.js ./data/20261030書櫃.xlsx",
+    "convert": "node ./command/excel-to-json/convert.js ./data/20261120書櫃.xlsx",
     "images": "node ./command/webp-images/build-images.js",
     "split2500": "node ./command/split-image/split2500.js",
     "split2500:simp": "node ./command/split-image/split2500.js ./data/田英章毛筆楷書2500字（簡體） ./data/char-image/田英章毛筆楷書2500字（簡體）",
